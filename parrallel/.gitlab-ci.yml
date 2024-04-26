@@ -1,0 +1,52 @@
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_APPROVED
+    - if: $CI_COMMIT_BRANCH == 'develop'
+default:
+  retry: 1
+
+stages:
+  - build
+  - deploy
+
+variables:
+  VERSION: $CI_COMMIT_SHORT_SHA
+  AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  ECR_URL: $ECR_URL
+  ECR_BATCH_IMAGE_URL: $ECR_URL/$ECR_REPO_NAME
+
+build_crontab_batch_job:
+  stage: build
+  needs: []
+  variables:
+    RUNNER_SCRIPT_TIMEOUT: 30m
+    RUNNER_AFTER_SCRIPT_TIMEOUT: 10m
+  script:
+    - echo "Checkout develop branch"
+    - git checkout develop
+    - echo "...Build & push crontab batch image to ECR"
+    - ./build_crontab_batch.sh
+
+build_file_batch_job:
+  stage: build
+  rules:
+    - changes:
+        - track_folder/**/*
+  variables:
+    RUNNER_SCRIPT_TIMEOUT: 30m
+    RUNNER_AFTER_SCRIPT_TIMEOUT: 10m
+  script:
+    - echo "Checkout develop branch"
+    - git checkout develop
+    - echo "...Build & push file batch image to ECR"
+    - ./build_file_batch.sh
+
+deploy_crontab_job:
+  stage: deploy
+  needs:
+    - build_crontab_batch_job
+  script:
+    - ./deploy.sh
+  after_script:
+    - rm -fr $CI_PROJECT_DIR
