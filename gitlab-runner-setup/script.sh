@@ -44,7 +44,30 @@ WantedBy=multi-user.target
 EOF
 
 ## register to gitlab
-gitlab-runner register --non-interactive --url "https://gitlab.domain" --token "TOKEB" --executor "shell" --description "Gitlab-Runner" --tag-list "tag" --run-untagger="true" --locked="false" --access-level="not_protected"
+gitlab-runner register --non-interactive --url "https://gitlab.domain" --token "TOKEN" --executor "shell" --description "Gitlab-Runner" --tag-list "tag" --run-untagger="true" --locked="false" --access-level="not_protected"
+
+## manual register
+tee /etc/gitlab-runner/config.toml <<EOF
+concurrent = 2
+check_interval = 0
+connection_max_age = "0"
+shutdown_timeout = 0
+
+[session_server]
+  session_timeout = 3600
+
+[[runners]]
+  name = "runner_name"
+  url = "https://gitlab.domain"
+  id = 674
+  token = "TOKEN"
+  token_obtained_at = 2024-03-06T02:17:58Z
+  token_expires_at = 0001-01-01T00:00:00Z
+  executor = "shell"
+  output_limit = 10240
+  [runners.cache]
+    MaxUploadedArchiveSize = 0
+EOF
 
 ## enable & start gitlab
 systemctl enable gitlab-runner
