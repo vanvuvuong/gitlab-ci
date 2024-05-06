@@ -50,8 +50,8 @@ gitlab-runner register --non-interactive --url "https://gitlab.domain" --token "
 tee /etc/gitlab-runner/config.toml <<EOF
 concurrent = 2
 check_interval = 0
-connection_max_age = "0"
-shutdown_timeout = 0
+connection_max_age = 0
+shutdown_timeout = 900
 
 [session_server]
   session_timeout = 3600
@@ -64,7 +64,7 @@ shutdown_timeout = 0
   token_obtained_at = 2024-03-06T02:17:58Z
   token_expires_at = 0001-01-01T00:00:00Z
   executor = "shell"
-  output_limit = 10240
+  output_limit = 5120
   [runners.cache]
     MaxUploadedArchiveSize = 0
 EOF
