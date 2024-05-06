@@ -33,6 +33,8 @@ build_file_batch_job:
   rules:
     - changes:
         - track_folder/**/*
+    - when: delayed
+      start_in: 300 seconds
   variables:
     RUNNER_SCRIPT_TIMEOUT: 30m
     RUNNER_AFTER_SCRIPT_TIMEOUT: 10m
