@@ -1,0 +1,9 @@
+stages:
+  - build
+build_job:
+  stage: build
+  script:
+    - echo "...Checkout develop branch"
+    - git checkout develop
+    - echo "...Build & push image"
+    - ../buildkit/build.sh

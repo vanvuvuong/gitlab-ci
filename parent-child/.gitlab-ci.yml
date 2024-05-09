@@ -1,0 +1,28 @@
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_APPROVED
+    - if: $CI_COMMIT_BRANCH == 'develop'
+
+default:
+  retry: 1
+  after_script:
+    - docker system prune -af
+    - rm -fr $CI_PROJECT_DIR
+
+variables:
+  VERSION: $CI_COMMIT_SHORT_SHA
+  AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  ECR_URL: $ECR_URL
+  ECR_BATCH_IMAGE_URL: $ECR_URL/$ECR_REPO_NAME
+
+stages:
+  - triggers
+
+trigger-dm-mdbunrui-d:
+  stage: trigger
+  trigger:
+    include: child/.gitlab-ci.yml
+  rules:
+    - changes:
+        - child/**/*
